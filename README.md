@@ -33,6 +33,8 @@ Note: to use Cryptofree, remove the `CRYPTOSTORM_USERNAME` line and replace `cst
 docker run --cap-add NET_ADMIN \
     --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
     --env CRYPTOSTORM_CONFIG_FILE=cstorm_linux-balancer_udp.ovpn \
+    --dns 5.101.137.251 --dns 46.165.222.246 \
+
 
 ```
 
@@ -52,4 +54,5 @@ The container has a built in `iptables` firewall based off [this gist](https://g
 ### NET_ADMIN required
 Running VPN clients in Docker **requires NET_ADMIN**. That means you need to add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop). **If you don't do this, the container won't be able to connect and will exit**.
 
-
+### DNS
+**You must specify DNS servers or the container won't be able to run**. It is suggested that you use [Cryptostorm's deepDNS service](https://github.com/cryptostorm/cstorm_deepDNS). You should look through the [list of resolvers](https://github.com/cryptostorm/cstorm_deepDNS/blob/master/dnscrypt-resolvers.csv) and select the two that are closest (geographically) to **your chosen Cryptostorm node**, not your physical location. This is because DNS is accessed over the VPN once it has started.
