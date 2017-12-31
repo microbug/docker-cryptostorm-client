@@ -2,11 +2,13 @@
 *This is not an official Cryptostorm client, it just supports Cryptostorm.*
 
 ## What does this do?
-TLDR: Connects to Cryptostorm VPN and allows you to link other containers to it.
+Connects to Cryptostorm VPN and allows you to link other containers to it.
 
-This container has everything necessary to connect to Cryptostorm. Pass it a username and (optionally) specify which node to use (by setting which config file to use), and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
+This image is designed to work with Cryptostorm's VPN service. Pass it a username and (optionally) specify which node to use (by setting which config file to use), and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
 
-Since it's based on Alpine, the container is very lightweight at around 4MB compressed.
+Since it's based on Alpine, the image is very lightweight at around 4MB compressed.
+
+If you don't have a Cryptostorm token, you can purchase them [here](https://cryptostorm.is). You can purchase a 1 week token for $1 (at the time of writing) so it's cheap to try out. Note that different token lengths have different numbers of maximum simultaneous connections; if you want to use the VPN on your phone/computer and in the container at the same time you'll [need to buy a 3 month or longer token](https://twitter.com/cryptostorm_is/status/852223442279579648).
 
 ## Usage
 `docker-compose` is recommended (for ease of use and clarity) over `docker run` but examples of both are provided.
@@ -46,7 +48,7 @@ Start the container as above. Do `docker ps` and copy the container ID. Do `dock
 ### Connecting other containers
 With `docker run`, you can use `--net=container:vpn_container_name`. With `docker-compose` you can use `network_mode: "service:vpn_container_name"`.
 
-This solution has been tested and works with macvlans.
+This solution has been tested and works with [macvlan networks](https://docs.docker.com/engine/userguide/networking/get-started-macvlan/).
 
 ### IPv6
 #### **[You should disable IPv6 on the host](https://twitter.com/cryptostorm_is/status/735068133308956672)**.
@@ -60,10 +62,10 @@ Cryptostorm uses a SHA512-based authentication system ([more on their website](h
 Unless you know why you need TCP, you should use the UDP config files.
 
 ### Firewall
-The container has a built in `iptables` firewall based off [this gist](https://gist.github.com/superjamie/ac55b6d2c080582a3e64). It blocks all non-vpn traffic on `eth0` **except OpenVPN, DNS, ICMP and local (LAN) traffic**. This should prevent any external communication except to establish a VPN connection. It also means that you can still access attached containers' services from within the network (e.g., if you're running Deluge you can still connect to the web interface). DNS *should* be forwarded over the VPN once it's up.
+The image has a built in `iptables` firewall based off [this gist](https://gist.github.com/superjamie/ac55b6d2c080582a3e64). It blocks all non-vpn traffic on `eth0` **except OpenVPN, DNS, ICMP and local (LAN) traffic**. This should prevent any external communication except to establish a VPN connection. It also means that you can still access attached containers' services from within the network (e.g., if you're running Deluge you can still connect to the web interface). DNS *should* be forwarded over the VPN once it's up.
 
 ### NET_ADMIN required
-**You must give the container NET_ADMIN or it won't be able to connect and will exit**. Running VPN clients in Docker **requires NET_ADMIN**. To give this, add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop).
+**You must give the image NET_ADMIN or it won't be able to connect and will exit**. Running VPN clients in Docker **requires NET_ADMIN**. To give this, add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop).
 
 ### DNS
 **You must specify at least one DNS server or the container won't be able to connect and will exit**. It is suggested that you use [Cryptostorm's deepDNS service](https://github.com/cryptostorm/cstorm_deepDNS). You should look through the [list of resolvers](https://github.com/cryptostorm/cstorm_deepDNS/blob/master/dnscrypt-resolvers.csv) and select the two that are closest (geographically) to **your chosen Cryptostorm node**, not your physical location. This is because DNS is accessed over the VPN once it has started.
@@ -71,10 +73,13 @@ The container has a built in `iptables` firewall based off [this gist](https://g
 ### Timezone
 Having the system clock correct is important for VPNs as the server may reject requests that have incorrect timestamps. The container uses the host's timekeeping so make sure you have NTP correctly set up on the host.
 
-## License
-MIT license:
+## Contributing
+Contributions, suggestions and bug reports are welcomed. I have attempted to get Cryptofree (free Cryptostorm service with capped speed) working — if you are interested, have a go at this.
 
-Copyright 2017 Richard Coleman
+## License
+The contents of this repository are licensed under the MIT license:
+
+Copyright 2017 Richard Coleman (microbug)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
