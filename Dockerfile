@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-# Download cryptostorm ovpn files, process them to allow is tp use our auth file and custom CA cert location
+# Download cryptostorm ovpn files, process them to allow using an auth file and custom CA cert location
 RUN wget https://github.com/cryptostorm/cryptostorm_client_configuration_files/archive/master.zip \
     && mkdir -p ovpn-configs \
     && unzip master.zip \
