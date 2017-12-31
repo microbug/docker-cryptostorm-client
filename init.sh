@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Create credentials file
 # Note: Cryptostorm doesn't care what password you use as auth is done via the username

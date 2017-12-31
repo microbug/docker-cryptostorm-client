@@ -11,7 +11,7 @@ RUN wget https://github.com/cryptostorm/cryptostorm_client_configuration_files/a
     && find ovpn-configs -type f -exec sed -i 's/ca ca.crt/ca \/ovpn-configs\/ca.crt/g' {} \;
 
 
-RUN apk --no-cache add bash openvpn curl iptables
+RUN apk --no-cache add openvpn curl iptables
 
 ADD init.sh /config/init.sh
 RUN chmod +x /config/init.sh
