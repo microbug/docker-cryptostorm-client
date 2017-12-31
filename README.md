@@ -9,7 +9,7 @@ This container has everything necessary to connect to Cryptostorm. Pass it a use
 ## Usage
 `docker-compose` is recommended (for ease of use and clarity) over `docker run` but examples of both are provided.
 
-### Sample with docker-compose
+### Example with docker-compose
 ```yaml
 version: '3'
 
@@ -26,7 +26,7 @@ services:
       - 46.165.222.246
 ```
 
-### Sample with docker run
+### Example with docker run
 ```bash
 docker run --cap-add NET_ADMIN \
     --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
@@ -48,3 +48,6 @@ Running VPN clients in Docker **requires NET_ADMIN**. That means you need to add
 
 ### DNS
 **You must specify at least one DNS server or the container won't be able to connect and will exit**. It is suggested that you use [Cryptostorm's deepDNS service](https://github.com/cryptostorm/cstorm_deepDNS). You should look through the [list of resolvers](https://github.com/cryptostorm/cstorm_deepDNS/blob/master/dnscrypt-resolvers.csv) and select the two that are closest (geographically) to **your chosen Cryptostorm node**, not your physical location. This is because DNS is accessed over the VPN once it has started.
+
+### IPv6
+**[You should disable IPv6 on the host](https://twitter.com/cryptostorm_is/status/735068133308956672)**. IPv6 It isn't easily possible to do this within the container without making it privileged. There are [various](http://ask.xmodulo.com/disable-ipv6-linux.html) [guides](https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu) [online](https://askubuntu.com/questions/309461/how-to-disable-ipv6-permanently) for this.
