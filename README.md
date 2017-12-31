@@ -17,7 +17,7 @@ version: '3'
 
 services:
   vpn:
-    image: microbug/cryptostorm-client
+    image: microbug/cryptostorm-client:latest
     environment:
       CRYPTOSTORM_USERNAME: your_long_sha512_hash
       CRYPTOSTORM_CONFIG_FILE: cstorm_linux-balancer_udp.ovpn
