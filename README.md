@@ -16,7 +16,7 @@ services:
   vpn:
     build: .
     environment:
-      CRYPTOSTORM_USERNAME: your_long_sha512
+      CRYPTOSTORM_USERNAME: your_long_sha512_hash
       CRYPTOSTORM_CONFIG_FILE: cstorm_linux-balancer_udp.ovpn
     cap_add:
       - NET_ADMIN
@@ -44,18 +44,19 @@ services:
 ### Sample `docker run`
 
 ## Details
-### Firewall
-The container has a built in `iptables` firewall based off [this gist](https://gist.github.com/superjamie/ac55b6d2c080582a3e64). It blocks all non-vpn traffic on `eth0` **except OpenVPN, DNS, ICMP and local (LAN) traffic**. This should prevent any external communication except to establish a VPN connection. It also means that you can still access attached containers' services from within the network (e.g., if you're running Deluge you can still connect to the web interface). DNS *should* be forwarded over the VPN once it's up.
-
-### NET_ADMIN required
-Running VPN clients in Docker **requires NET_ADMIN**. So that means you need to add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop). **If you don't do this, the container won't be able to connect and will exit**.
-
-### Authentication and Cryptofree
-Cryptostorm uses a SHA512-based authentication system ([more on their website](https://cryptostorm.is)). The SHA512 hash of your token is used as the username, and the password is ignored. This means that you need to either:
+### Cryptostorm vs Cryptofree, and Authentication
+Cryptostorm uses a SHA512-based authentication system ([more on their website](https://cryptostorm.is)). The SHA512 hash of your token is used as the username, and the password is ignored. This means that you must either:
 
 - Provide a valid SHA512 through `--env CRYPSTOSTORM_USERNAME=myhash` or [docker-compose](https://docs.docker.com/compose/compose-file/#environment) **and** set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/linux).
 
 or:
 
 - Use [Cryptofree](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/cryptofree), Cryptostorm's free service capped at 160kb/s down, 130kb/s up. This is **the default**, but can be selected by setting `CRYPTOSTORM_CONFIG_FILE` to `cryptofree_linux-udp.ovpn` or `cryptofree_linux-tcp.ovpn`.
+
+### Firewall
+The container has a built in `iptables` firewall based off [this gist](https://gist.github.com/superjamie/ac55b6d2c080582a3e64). It blocks all non-vpn traffic on `eth0` **except OpenVPN, DNS, ICMP and local (LAN) traffic**. This should prevent any external communication except to establish a VPN connection. It also means that you can still access attached containers' services from within the network (e.g., if you're running Deluge you can still connect to the web interface). DNS *should* be forwarded over the VPN once it's up.
+
+### NET_ADMIN required
+Running VPN clients in Docker **requires NET_ADMIN**. That means you need to add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop). **If you don't do this, the container won't be able to connect and will exit**.
+
 
