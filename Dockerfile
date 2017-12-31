@@ -18,7 +18,7 @@ ADD init.sh /config/init.sh
 RUN chmod +x /config/init.sh
 
 ENV CRYPTOSTORM_USERNAME=nobody
-ENV CRYPTOSTORM_CONFIG_FILE=cstorm_linux-balancer_udp.ovpn
+ENV CRYPTOSTORM_CONFIG_FILE=cryptofree_linux-udp.ovpn
 
 HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
              CMD curl -L 'https://api.ipify.org' 
