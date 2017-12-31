@@ -6,6 +6,8 @@ TLDR: Connects to Cryptostorm VPN and allows you to link other containers to it.
 
 This container has everything necessary to connect to Cryptostorm. Pass it a username and (optionally) specify which node to use (by setting which config file to use), and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
 
+Since it's based on Alpine, the container is very lightweight at around 4MB compressed.
+
 ## Usage
 `docker-compose` is recommended (for ease of use and clarity) over `docker run` but examples of both are provided.
 
