@@ -46,9 +46,13 @@ With `docker run`, you can use `--net=container:vpn_container_name`. With `docke
 
 This solution has been tested and works with macvlans.
 
+### IPv6
+#### **[You should disable IPv6 on the host](https://twitter.com/cryptostorm_is/status/735068133308956672)**.
+It's not possible to do this within the container without making it privileged. There are [various](http://ask.xmodulo.com/disable-ipv6-linux.html) [guides](https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu) [online](https://askubuntu.com/questions/309461/how-to-disable-ipv6-permanently) for this.
+
 ## Details
 ### Authentication and Config Files
-Cryptostorm uses a SHA512-based authentication system ([more on their website](https://cryptostorm.is)). The SHA512 hash of your token is used as the username, and the password is ignored. You must provide a valid SHA512 through `--env CRYPSTOSTORM_USERNAME=myhash` or [docker-compose](https://docs.docker.com/compose/compose-file/#environment) **and** set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/linux). **If you don't do this, the container won't be able to connect and will exit**.
+Cryptostorm uses a SHA512-based authentication system ([more on their website](https://cryptostorm.is)). The SHA512 hash of your token is used as the username, and the password is ignored. You must provide a valid SHA512 through `--env CRYPSTOSTORM_USERNAME=your_long_sha512_hash` or [docker-compose](https://docs.docker.com/compose/compose-file/#environment) **and** set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/linux). **If you don't do this, the container won't be able to connect and will exit**.
 
 ### TCP vs UDP
 Unless you know why you need TCP, you should use the UDP config files.
@@ -65,5 +69,3 @@ The container has a built in `iptables` firewall based off [this gist](https://g
 ### Timezone
 Having the system clock correct is important for VPNs as the server may reject requests that have incorrect timestamps. The container uses the host's timekeeping so make sure you have NTP correctly set up on the host.
 
-### IPv6
-**[You should disable IPv6 on the host](https://twitter.com/cryptostorm_is/status/735068133308956672)**. IPv6 It isn't easily possible to do this within the container without making it privileged. There are [various](http://ask.xmodulo.com/disable-ipv6-linux.html) [guides](https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu) [online](https://askubuntu.com/questions/309461/how-to-disable-ipv6-permanently) for this.
