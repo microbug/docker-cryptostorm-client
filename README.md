@@ -1,20 +1,22 @@
-# Cryptostorm OpenVPN client (unofficial)
+# Cryptostorm Docker OpenVPN client
 *This is not an official Cryptostorm client, it just supports Cryptostorm.*
 
 ## What does this do?
-This alpine-based container contains the [Cryptostorm .ovpn configuration files](https://github.com/cryptostorm/cryptostorm_client_configuration_files). Give it a username and (optionally) specify which config file to use, and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
+TLDR: Connects to Cryptostorm (or Cryptofree) VPN and allows you to link other containers to it.
+
+This container has everything necessary to connect to Cryptostorm or Cryptofree. Pass it a username and (optionally) specify which config file to use, and it will connect to Cryptostorm/Cryptofree. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
 
 ## Usage
 `docker-compose` is recommended (for ease of use and clarity) over `docker run` but examples of both are provided.
 
 ### Sample `docker-compose.yml`
-#### Cryptostorm (paid service)
+Note: to use Cryptofree, remove the `CRYPTOSTORM_USERNAME` line and replace `cstorm_linux-balancer_udp.ovpn` with `cryptofree_linux-udp.ovpn`.
 ```yaml
 version: '3'
 
 services:
   vpn:
-    build: .
+    image: microbug/cryptostorm-client
     environment:
       CRYPTOSTORM_USERNAME: your_long_sha512_hash
       CRYPTOSTORM_CONFIG_FILE: cstorm_linux-balancer_udp.ovpn
@@ -25,23 +27,14 @@ services:
       - 46.165.222.246
 ```
 
-#### Cryptofree (free service)
-```yaml
-version: '3'
-
-services:
-  vpn:
-    build: .
-    environment:
-      CRYPTOSTORM_CONFIG_FILE: cryptofree_linux-udp.ovpn
-    cap_add:
-      - NET_ADMIN
-    dns:
-      - 5.101.137.251
-      - 46.165.222.246
-```
-
 ### Sample `docker run`
+Note: to use Cryptofree, remove the `CRYPTOSTORM_USERNAME` line and replace `cstorm_linux-balancer_udp.ovpn` with `cryptofree_linux-udp.ovpn`.
+```bash
+docker run --cap-add NET_ADMIN \
+    --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
+    --env CRYPTOSTORM_CONFIG_FILE=cstorm_linux-balancer_udp.ovpn \
+
+```
 
 ## Details
 ### Cryptostorm vs Cryptofree, and Authentication
