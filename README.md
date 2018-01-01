@@ -82,6 +82,11 @@ Cryptostorm uses a SHA512-based authentication system ([more on their website](h
 ### TCP vs UDP
 Unless you know why you need TCP, you should use the UDP config files.
 
+### Ports
+Cryptostorm [supports port striping](https://cryptostorm.org/viewtopic.php?f=37&t=6034&p=8125&hilit=port+striping#p8125), so **you can connect to the VPN via any port**. By default port 1194 is used, you can change this by specifying `--env PORT=your_port` or adding `PORT: your_port` under `environment:` in docker-compose.
+
+If your ISP/firewall blocks port 1194, you should try port 80 or port 443. These are not used by default as the container's firewall allows non-VPN traffic using the chosen port, and allowing ports 80 or 443 could allow traffic to leak through the firewall without passing through the VPN.
+
 ### Firewall
 The image has a built in `iptables` firewall based off [this gist](https://gist.github.com/superjamie/ac55b6d2c080582a3e64). It blocks all non-vpn traffic on `eth0` **except OpenVPN, DNS, ICMP and local (LAN) traffic**. This should prevent any external communication except to establish a VPN connection. It also means that you can still access attached containers' services from within the network (e.g., if you're running Deluge you can still connect to the web interface). DNS *should* be forwarded over the VPN once it's up.
 
