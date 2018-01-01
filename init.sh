@@ -7,7 +7,7 @@ printf "$CRYPTOSTORM_USERNAME\nfoo" > /config/credentials
 # Check that $PORT is set and it is a number less than 65536
 case $PORT in
     ''|*[!0-9]*)
-        echo "Specified port $PORT doesn't look valid, exiting"
+        echo "Specified port $PORT is invalid, exiting"
         exit 1
         ;;
     *) ;;
@@ -19,7 +19,7 @@ if [ "$PORT" -gt "65535" ]; then
 fi
 
 # Change all configs to use the specified port
-find ovpn-configs -type f -exec sed -i 's/443/$PORT/g' {} \;
+find ovpn-configs -type f -exec sed -i "s/443/$PORT/g" {} \;
 
 # Create /dev/net/tun
 mkdir -p /dev/net
