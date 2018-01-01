@@ -33,8 +33,8 @@ iptables -A OUTPUT -o eth0 -p icmp -m comment --comment "icmp" -j ACCEPT
 iptables -A OUTPUT -d 192.168.0.0/16 -o eth0 -m comment --comment "lan /16" -j ACCEPT
 iptables -A OUTPUT -d 172.16.0.0/12 -o eth0 -m comment --comment "lan /12" -j ACCEPT
 iptables -A OUTPUT -d 10.0.0.0/8 -o eth0 -m comment --comment "lan /8" -j ACCEPT
-iptables -A OUTPUT -o eth0 -p udp -m udp --dport 443 -m comment --comment "openvpn" -j ACCEPT
-iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport 443 -m comment --comment "openvpn" -j ACCEPT
+iptables -A OUTPUT -o eth0 -p udp -m udp --dport $PORT -m comment --comment "openvpn" -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport $PORT -m comment --comment "openvpn" -j ACCEPT
 iptables -A OUTPUT -o eth0 -p udp -m udp --dport 53 -m comment --comment "dns" -j ACCEPT
 iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport 53 -m comment --comment "dns" -j ACCEPT
 iptables -A OUTPUT -o eth0 -j DROP
