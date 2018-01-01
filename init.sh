@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Create credentials file
-# Note: Cryptostorm doesn't care what password you use as auth is done via the username
+# Cryptostorm doesn't care what password you use so we use 'foo'
 printf "$CRYPTOSTORM_USERNAME\nfoo" > /config/credentials
 
 # Create /dev/net/tun
@@ -10,7 +10,7 @@ mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 
 # Set up firewall to block all non-vpn traffic except DNS and ICMP (ping)
-# Sicne Cryptostorm runs on port 443 this won't block everything
+# Since Cryptostorm runs on port 443 this won't block everything
 iptables -A OUTPUT -o tun0 -m comment --comment "vpn" -j ACCEPT
 iptables -A OUTPUT -o eth0 -p icmp -m comment --comment "icmp" -j ACCEPT
 iptables -A OUTPUT -d 192.168.0.0/16 -o eth0 -m comment --comment "lan /16" -j ACCEPT
