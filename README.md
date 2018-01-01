@@ -13,7 +13,7 @@ If you don't have a Cryptostorm token, you can purchase them [here](https://cryp
 ## Usage
 `docker-compose` is recommended (for ease of use and clarity) over `docker run` but examples of both are provided.
 
-### Example with docker-compose
+### Example with docker-compose, linking Deluge
 You can store the username and/or config file setting in a file and specify it with [env_file](https://docs.docker.com/compose/compose-file/#env_file), if you wish.
 
 ```yaml
@@ -30,16 +30,37 @@ services:
     dns:
       - 5.101.137.251
       - 46.165.222.246
+
+  deluge:
+    image: linuxserver/deluge:latest
+    depends-on:
+      - vpn
+    environment:
+      TZ: Europe/London
+      PGID: 1000
+      PUID: 1000
+    network_mode: "service:vpn"
+    volumes:
+      - /your/config/folder:/config:rw
+      - /your/downloads/folder:/downloads:rw
 ```
 
-### Example with docker run
+### Example with docker run, linking Deluge
 ```bash
 docker run -d \ 
     --cap-add NET_ADMIN \
     --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
     --env CRYPTOSTORM_CONFIG_FILE=cstorm_linux-balancer_udp.ovpn \
     --dns 5.101.137.251 --dns 46.165.222.246 \
-    microbug/cryptostorm-client
+    --name vpn \
+    microbug/cryptostorm-client:latest
+
+docker run -d \
+    --env TZ=Europe/London --env PGID=1000 --env PUID=1000 \
+    --net container:vpn \
+    -v /your/config/folder:/config:rw \
+    -v /your/downloads/folder:/downloads:rw \
+    linuxserver/deluge:latest
 ```
 
 ### Checking that it works
