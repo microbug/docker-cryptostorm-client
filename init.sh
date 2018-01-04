@@ -26,8 +26,9 @@ mkdir -p /dev/net
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 
-# Set up firewall to block all non-vpn traffic except DNS and ICMP (ping)
-# Since Cryptostorm runs on port 443 this won't block everything
+# Set up firewall to block all traffic except VPN, DNS and ICMP (ping)
+# Note: if you run the VPN on 443 or 80 TCP, HTTP or HTTPS traffic may
+#       be able to leak through the firewall if specifically directed to eth0
 iptables -A OUTPUT -o tun0 -m comment --comment "vpn" -j ACCEPT
 iptables -A OUTPUT -o eth0 -p icmp -m comment --comment "icmp" -j ACCEPT
 iptables -A OUTPUT -d 192.168.0.0/16 -o eth0 -m comment --comment "lan /16" -j ACCEPT
@@ -39,6 +40,5 @@ iptables -A OUTPUT -o eth0 -p udp -m udp --dport 53 -m comment --comment "dns" -
 iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport 53 -m comment --comment "dns" -j ACCEPT
 iptables -A OUTPUT -o eth0 -j DROP
 
-
-# Start openvpn (requires cap_add=NET_ADMIN)
+# Start openvpn (requires NET_ADMIN)
 openvpn --client --auth-user-pass /config/credentials --config /ovpn-configs/$CRYPTOSTORM_CONFIG_FILE
