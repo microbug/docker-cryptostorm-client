@@ -3,6 +3,10 @@
 # Create credentials file
 # Cryptostorm doesn't care what password you use so we use 'foo'
 printf "$CRYPTOSTORM_USERNAME\nfoo" > /config/credentials
+# Remove group and other permissions to remove an openvpn log warning
+chmod go-wrx /config/credentials
+
+
 
 # Check that $PORT is set and it is a number less than 65536
 case $PORT in
