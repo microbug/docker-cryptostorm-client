@@ -6,7 +6,7 @@ Connects to Cryptostorm VPN and allows you to link other containers to it. Image
 
 This image is designed to work with Cryptostorm's VPN service. Pass it a username and (optionally) specify which node to use (by setting which config file to use), and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
 
-Since it's based on Alpine, the image is very lightweight at around 13.5MB compressed.
+Since it's based on Alpine, the image is very lightweight at around [5MB compressed](https://hub.docker.com/r/microbug/cryptostorm-client/tags/).
 
 If you don't have a Cryptostorm token, you can purchase them [here](https://cryptostorm.is). You can purchase a 1 week token for $1 (at the time of writing) so it's cheap to try out. Note that different token lengths have different numbers of maximum simultaneous connections; if you want to use the VPN on your phone/computer and in the container at the same time you'll [need to buy a 3 month or longer token](https://twitter.com/cryptostorm_is/status/852223442279579648).
 
