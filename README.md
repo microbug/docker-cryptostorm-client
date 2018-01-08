@@ -2,7 +2,7 @@
 *This is not an official Cryptostorm client, it just supports Cryptostorm.*
 
 ## What does this do?
-Connects to Cryptostorm VPN and allows you to link other containers to it.
+Connects to Cryptostorm VPN and allows you to link other containers to it. Image name: `microbug/cryptstorm-client`.
 
 This image is designed to work with Cryptostorm's VPN service. Pass it a username and (optionally) specify which node to use (by setting which config file to use), and it will connect to Cryptostorm. You can then connect other containers to it via `--net=container:vpn_container_name` or through [docker-compose](https://docs.docker.com/compose/compose-file/#network_mode).
 
