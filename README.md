@@ -100,7 +100,7 @@ The image has a built in `iptables` firewall based off [this gist](https://gist.
 Having the system clock correct is important for VPNs as the server may reject requests that have incorrect timestamps. The container uses the host's timekeeping so make sure you have NTP correctly set up on the host.
 
 ## Contributing
-Contributions, suggestions and bug reports are welcomed. I have attempted to get Cryptofree (free Cryptostorm service with capped speed) working — if you are interested, have a go at this.
+Contributions, suggestions and bug reports are welcomed. Full guidelines are in `CONTRIBUTING.md`.
 
 ## License
 The contents of this repository are licensed under the MIT license, which can be found in the LICENSE file.
