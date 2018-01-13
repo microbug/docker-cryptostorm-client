@@ -20,6 +20,5 @@ HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
              CMD curl -L 'https://api.ipify.org' 
 
 ADD init.sh /config/init.sh
-RUN chmod +x /config/init.sh
 
 CMD ["/config/init.sh"]
