@@ -21,6 +21,15 @@ if [ "$PORT" -gt "65535" ]; then
     exit 2
 fi
 
+# Add three lines to each config file. Makes /etc/openvpn/update-resolv-conf
+# run after and before connecting. Details: https://cryptostorm.is/nix#terminal
+for conf in /ovpn-configs/*.ovpn; do
+	echo 'script-security 2' >> $conf;
+ 	echo 'up /etc/openvpn/update-resolv-conf' >> $conf;
+ 	echo 'down /etc/openvpn/update-resolv-conf' >> $conf;
+done
+
+
 # Change all configs to use the specified port
 find ovpn-configs -type f -exec sed -i "s/443/$PORT/g" {} \;
 
@@ -29,27 +38,6 @@ mkdir -p /dev/net
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 
-# Set up firewall to block all traffic except VPN, DNS and ICMP (ping)
-# Note: if you run the VPN on 443 or 80 TCP, HTTP or HTTPS traffic may
-#       be able to leak through the firewall if specifically directed to eth0
-iptables -A OUTPUT -o tun0 -j ACCEPT # Permit everything from tun0
-iptables -A OUTPUT -o eth0 -p icmp -j ACCEPT # Permit all ICMP from eth0
-iptables -A OUTPUT -d 192.168.0.0/16 -o eth0 -j ACCEPT # Permit all to LAN from eth0
-iptables -A OUTPUT -d 172.16.0.0/12 -o eth0 -j ACCEPT  # Permit all to LAN from eth0
-iptables -A OUTPUT -d 10.0.0.0/8 -o eth0 -j ACCEPT     # Permit all to LAN from eth0
-
-# Permit selected UDP port if UDP config file is elected, else permit elected TCP port
-# Shellcheck thinks that "udp.ovpn" is regex and throws an error
-# shellcheck disable=SC2076
-if [[ $CRYPTOSTORM_CONFIG_FILE =~ "udp.ovpn" ]]; then
-    iptables -A OUTPUT -o eth0 -p udp -m udp --dport "$PORT" -j ACCEPT
-else
-    iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport "$PORT" -j ACCEPT
-fi
-
-iptables -A OUTPUT -o eth0 -p udp -m udp --dport 53 -j ACCEPT # Permit DNS over UDP from eth0 
-iptables -A OUTPUT -o eth0 -p tcp -m tcp --dport 53 -j ACCEPT # Permit DNS over TCP from eth0 
-iptables -A OUTPUT -o eth0 -j DROP # Drop everything else
-
 # Start openvpn (requires NET_ADMIN)
 openvpn --client --auth-user-pass /config/credentials --config "/ovpn-configs/$CRYPTOSTORM_CONFIG_FILE"
+

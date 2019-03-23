@@ -24,12 +24,9 @@ services:
     image: microbug/cryptostorm-client:latest
     environment:
       CRYPTOSTORM_USERNAME: your_long_sha512_hash
-      CRYPTOSTORM_CONFIG_FILE: cstorm_linux-balancer_udp.ovpn
+      CRYPTOSTORM_CONFIG_FILE: Balancer_UDP.ovpn
     cap_add:
       - NET_ADMIN
-    dns:
-      - 5.101.137.251
-      - 46.165.222.246
 
   deluge:
     image: linuxserver/deluge:latest
@@ -50,8 +47,7 @@ services:
 docker run -d \ 
     --cap-add NET_ADMIN \
     --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
-    --env CRYPTOSTORM_CONFIG_FILE=cstorm_linux-balancer_udp.ovpn \
-    --dns 5.101.137.251 --dns 46.165.222.246 \
+    --env CRYPTOSTORM_CONFIG_FILE=Balancer_UDP.ovpn \
     --name vpn \
     microbug/cryptostorm-client:latest
 
