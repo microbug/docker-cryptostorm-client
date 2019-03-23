@@ -9,16 +9,20 @@ RUN wget https://github.com/cryptostorm/cryptostorm_client_configuration_files/a
     && find ovpn-configs -type f -exec sed -i 's/auth-user-pass/#auth-user-pass/g' {} \; \
     && find ovpn-configs -type f -exec sed -i 's/#auth-nocache/auth-nocache/g' {} \;
 
-RUN apk --no-cache add openvpn bash curl
+RUN apk --no-cache add openvpn bash curl openresolv
 
 ENV CRYPTOSTORM_USERNAME=nobody
 ENV CRYPTOSTORM_CONFIG_FILE=Balancer_UDP.ovpn
 ENV PORT=1194
 
+ENV KILLSWITCH_ACTIVATION_TIME=30
+ENV KILLSWITCH_CHECK_INTERVAL=5
+
 HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
              CMD curl -L 'https://api.ipify.org' 
 
-ADD init.sh /config/init.sh
+ADD init.sh /init.sh
+ADD start-vpn.sh /start-vpn.sh
 ADD update-resolv-conf /etc/openvpn/update-resolv-conf
 
-CMD ["/config/init.sh"]
+CMD ["/init.sh"]

@@ -99,4 +99,4 @@ Having the system clock correct is important for VPNs as the server may reject r
 Contributions, suggestions and bug reports are welcomed. Full guidelines are in `CONTRIBUTING.md`.
 
 ## License
-The contents of this repository are licensed under the MIT license, which can be found in the LICENSE file.
+The contents of this repository (except `update-resolv-conf`) are licensed under the MIT license, which can be found in the LICENSE file. `update-resolv-conf` is licensed under the GPL license, which can be found online.
