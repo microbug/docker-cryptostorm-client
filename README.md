@@ -70,6 +70,19 @@ This works with [macvlan networks](https://docs.docker.com/engine/userguide/netw
 It's not possible to do this within the container without making it privileged. There are [various (1)](http://ask.xmodulo.com/disable-ipv6-linux.html) [guides (2)](https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu) [online (3)](https://askubuntu.com/questions/309461/how-to-disable-ipv6-permanently) for this.
 
 ## Details
+### Environment variables
+All environment variables:
+
+- `CRYPTOSTORM_USERNAME`: the sha512 hash of your token
+- `CRYPTOSTORM_CONFIG_FILE`: the name of the config file you want to use. There
+  is a list of filenames [here](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/ecc).
+- `PORT`: the port that OpenVPN will connect over. Defaults to 1194. Can be
+  1-65535.
+- `KILLSWITCH_ACTIVATION_TIME`: the time to wait for OpenVPN to start before
+  checking that the VPN's IP is presented to internet services. Defaults to 30s.
+- `KILLSWITCH_CHECK_INTERVAL`: the time to wait between each killswitch check.
+  Defaults to 5s.
+
 ### NET_ADMIN required
 **You must give the image NET_ADMIN or it won't be able to connect and will exit**. Running VPN clients in Docker **requires NET_ADMIN**. To give this, add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop).
 
@@ -77,6 +90,10 @@ It's not possible to do this within the container without making it privileged. 
 Cryptostorm uses a SHA512-based authentication system. The SHA512 hash of your token is used as the username, and the password is ignored. You must provide a valid SHA512 through `--env CRYPSTOSTORM_USERNAME=your_long_sha512_hash` or [docker-compose](https://docs.docker.com/compose/compose-file/#environment). **If you don't do this, the container won't be able to connect and will exit**.
 
 It is recommended to set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/ecc). If you don't do this the container will connect to a randomly chosen Cryptostorm node, which could decrease performance if that node is far away from you.
+
+### Killswitch
+The first file that runs in the container is `/init.sh`. This starts the VPN in
+the background and sleeps
 
 ### TCP vs UDP
 Unless you know why you need TCP, you should use the UDP config files.
