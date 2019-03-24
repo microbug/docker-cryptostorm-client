@@ -7,20 +7,6 @@ printf '%s\nfoo' "$CRYPTOSTORM_USERNAME" > /ovpn-credentials
 # Remove group and other permissions (prevents an openvpn log warning)
 chmod go-wrx /ovpn-credentials
 
-# Check that $PORT is set and it is a number less than 65536
-case $PORT in
-    ''|*[!0-9]*)
-        echo "Specified port $PORT is invalid, exiting"
-        exit 1
-        ;;
-    *) ;;
-esac
-
-if [ "$PORT" -gt "65535" ]; then
-    echo "Specified port $PORT is greater than the maximum (65535), exiting"
-    exit 2
-fi
-
 # Add three lines to each config file. Makes /etc/openvpn/update-resolv-conf
 # run after and before connecting. Details: https://cryptostorm.is/nix#terminal
 for conf in /ovpn-configs/*.ovpn; do
@@ -31,7 +17,7 @@ done
 
 
 # Change all configs to use the specified port
-find ovpn-configs -type f -exec sed -i "s/443/$PORT/g" {} \;
+find ovpn-configs -type f -exec sed -i "s/443/$CONNECTION_PORT/g" {} \;
 
 # Create /dev/net/tun
 mkdir -p /dev/net
