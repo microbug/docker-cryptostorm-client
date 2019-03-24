@@ -76,8 +76,11 @@ All environment variables:
 - `CRYPTOSTORM_USERNAME`: the sha512 hash of your token
 - `CRYPTOSTORM_CONFIG_FILE`: the name of the config file you want to use. There
   is a list of filenames [here](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/ecc).
-- `PORT`: the port that OpenVPN will connect over. Defaults to 1194. Can be
+- `CONNECTION_PORT`: the port that OpenVPN will connect over. Defaults to 1194. Can be
   1-65535.
+- `FORWARDING_PORT`: after the VPN is connected, this port will be requested to
+  be forwarded to the container. Note that this does not guarantee success as
+  the port may be unavailable.
 - `KILLSWITCH_ACTIVATION_TIME`: the time to wait for OpenVPN to start before
   checking that the VPN's IP is presented to internet services. Defaults to 30s.
 - `KILLSWITCH_CHECK_INTERVAL`: the time to wait between each killswitch check.
@@ -95,13 +98,20 @@ It is recommended to set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](
 The first file that runs in the container is `/init.sh`. This starts the VPN in
 the background and sleeps
 
+### Port forwarding
+Cryptostorm [supports port forwarding](https://cryptostorm.is/portfwd) for ports between 30000 and 65535
+(inclusive). To request a port to be forwarded, set the `FORWARDING_PORT`
+environment variable to the port number you want to forward to the container.
+Make sure you check the logs as this can fail if someone else is already using
+the port.
+
 ### TCP vs UDP
 Unless you know why you need TCP, you should use the UDP config files.
 
 ### Ports
-Cryptostorm [supports port striping](https://cryptostorm.org/viewtopic.php?f=37&t=6034&p=8125&hilit=port+striping#p8125), so **you can connect to the VPN via any port**. By default port 1194 is used, you can change this by specifying `--env PORT=your_port` or adding `PORT: your_port` under `environment:` in docker-compose.
+Cryptostorm [supports port striping](https://cryptostorm.org/viewtopic.php?f=37&t=6034&p=8125&hilit=port+striping#p8125), so **you can connect to the VPN via any port**. By default port 1194 is used, you can change this by specifying `--env CONNECTION_PORT=your_port` or adding `CONNECTION_PORT: your_port` under `environment:` in docker-compose.
 
-If your ISP/firewall blocks port 1194 (quite common), you should try port 80 or port 443. To change the port, set the environment variable `PORT` to the port number you want to use (1-65535).
+If your ISP/firewall blocks port 1194 (quite common), you should try port 80 or port 443. To change the port, set the environment variable `CONNECTION_PORT` to the port number you want to use (1-65535).
 
 ### Firewall
 The image used to have a firewall, but eth0 appears to be blocked once the VPN
