@@ -23,6 +23,8 @@ services:
     environment:
       CRYPTOSTORM_USERNAME: your_long_sha512_hash
       CRYPTOSTORM_CONFIG_FILE: Balancer_UDP.ovpn
+      CONNECTION_PORT: 1194
+    restart: always
     cap_add:
       - NET_ADMIN
 
@@ -35,6 +37,7 @@ services:
       PGID: 1000
       PUID: 1000
     network_mode: "service:vpn"
+    restart: always
     volumes:
       - /your/config/folder:/config:rw
       - /your/downloads/folder:/downloads:rw
@@ -46,6 +49,7 @@ docker run -d \
     --cap-add NET_ADMIN \
     --env CRYPTOSTORM_USERNAME=your_long_sha512_hash \
     --env CRYPTOSTORM_CONFIG_FILE=Balancer_UDP.ovpn \
+    --env CONNECTION_PORT=1194 \
     --name vpn \
     microbug/cryptostorm-client:latest
 
@@ -58,7 +62,10 @@ docker run -d \
 ```
 
 ### Checking that it works
-Start the container as above. Run `docker ps` and copy the container ID. Run `docker logs -f [CONTAINER ID]` to inspect the logs and check if it's working. Wait `$KILLSWITCH_ACTIVATION_TIME` (30s by default) and you should see the killswitch script check the current IP against the initial (pre-VPN) IP.
+Start the container as above. Run `docker ps` and copy the container ID. Run `docker logs -f [CONTAINER ID]` to inspect the logs and check if it's working. After the VPN connects you should see the killswitch script check the current IP address (which should be from your VPN) against the original IP address (your host's public IP).
+
+Port 1194 is commonly blocked by ISPs and organisations, if that is the case you
+can try 443 instead (see the section on port striping below).
 
 ### Connecting other containers
 With `docker run`, you can use `--net=container:vpn_container_name`. With `docker-compose` you can use `network_mode: "service:vpn_container_name"`.
@@ -81,10 +88,19 @@ All environment variables:
 - `FORWARDING_PORT`: after the VPN is connected, this port will be requested to
   be forwarded to the container. Note that this does not guarantee success as
   the port may be unavailable.
-- `KILLSWITCH_ACTIVATION_TIME`: the time to wait for OpenVPN to start before
-  checking that the VPN's IP is presented to internet services. Defaults to 30s.
 - `KILLSWITCH_CHECK_INTERVAL`: the time to wait between each killswitch check.
   Defaults to 5s.
+
+### Automatic recovery and killswitch
+The container automatically checks the current IP every
+`$KILLSWITCH_CHECK_INTERVAL` seconds. If there is a timeout (or curl exits
+non-zero), or the IP matches the host's public IP, openvpn is restarted. This
+should allow automatic recovery from openvpn's regular hiccups.
+
+If openvpn doesn't respond to TERM then the container may become unresponsive.
+There is a HEALTHCHECK command specified in the Dockerfile, you should define a
+restart policy in your Compose file to define what happens if the container is
+unresponsive.
 
 ### NET_ADMIN required
 **You must give the image NET_ADMIN or it won't be able to connect and will exit**. Running VPN clients in Docker **requires NET_ADMIN**. To give this, add `--cap-add NET_ADMIN` if running through `docker run` or use the [relevant docker-compose method](https://docs.docker.com/compose/compose-file/#cap_add-cap_drop).
@@ -95,15 +111,18 @@ Cryptostorm uses a SHA512-based authentication system. The SHA512 hash of your t
 It is recommended to set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/ecc). If you don't do this the container will connect to a randomly chosen Cryptostorm node, which could decrease performance if that node is far away from you.
 
 ### Killswitch
-The first file that runs in the container is `/init.sh`. This starts the VPN in
-the background and sleeps
+Every 5s (by default) the container will check its IP address. If it is
+different from the host's public IP, it will do nothing. If it is the same that
+means the VPN is down, 
 
 ### Port forwarding
 Cryptostorm [supports port forwarding](https://cryptostorm.is/portfwd) for ports between 30000 and 65535
 (inclusive). To request a port to be forwarded, set the `FORWARDING_PORT`
 environment variable to the port number you want to forward to the container.
 Make sure you check the logs as this can fail if someone else is already using
-the port.
+the port. It can also fail if the container is killed, as Cryptostorm won't know
+to release the port. (The port will be released after a few minutes if that
+happens).
 
 ### TCP vs UDP
 Unless you know why you need TCP, you should use the UDP config files.
@@ -114,12 +133,11 @@ Cryptostorm [supports port striping](https://cryptostorm.org/viewtopic.php?f=37&
 If your ISP/firewall blocks port 1194 (quite common), you should try port 80 or port 443. To change the port, set the environment variable `CONNECTION_PORT` to the port number you want to use (1-65535).
 
 ### Firewall
-The image used to have a firewall, but eth0 appears to be blocked once the VPN
-is running so this was removed. You can test this yourself by entering the
+The image used to have a firewall, but eth0 appears to be blocked anyway once the VPN
+is running so the firewall is redundant. You can test this yourself by entering the
 container and running `curl --interface eth0 api.ipify.org` (this should fail).
 Compare this to `curl --interface tun0 api.ipify.org`. This should work,
 indicating that traffic can only pass over tun0.
-
 
 ### DNS
 Your network's default DNS will be used to look up the Cryptostorm node. Once
