@@ -89,7 +89,7 @@ All environment variables:
   be forwarded to the container. Note that this does not guarantee success as
   the port may be unavailable.
 - `KILLSWITCH_CHECK_INTERVAL`: the time to wait between each killswitch check.
-  Defaults to 5s.
+  Defaults to 30s.
 
 ### Automatic recovery and killswitch
 The container automatically checks the current IP every
@@ -111,7 +111,7 @@ Cryptostorm uses a SHA512-based authentication system. The SHA512 hash of your t
 It is recommended to set `CRYPTOSTORM_CONFIG_FILE` to a choice from [this list](https://github.com/cryptostorm/cryptostorm_client_configuration_files/tree/master/ecc). If you don't do this the container will connect to a randomly chosen Cryptostorm node, which could decrease performance if that node is far away from you.
 
 ### Killswitch
-Every 5s (by default) the container will check its IP address. If it is
+Every 30s (by default) the container will check its IP address. If it is
 different from the host's public IP, it will do nothing. If it is the same that
 means the VPN is down, 
 

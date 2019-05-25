@@ -26,7 +26,7 @@ ENV CONNECTION_PORT=1194
 # FORWARDING_PORT=0 disables port forwarding
 ENV FORWARDING_PORT=0
 
-ENV KILLSWITCH_CHECK_INTERVAL=5
+ENV KILLSWITCH_CHECK_INTERVAL=30
 
 HEALTHCHECK --interval=60s --timeout=20s --start-period=120s \
              CMD curl -L 'https://api.ipify.org' 
