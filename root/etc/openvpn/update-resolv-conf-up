@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# allows running vpn-up immediately after connection, without modifying
+# update-resolv-conf or losing the variables ($script_type etc.) set by openvpn
+
+/etc/openvpn/update-resolv-conf
+/vpn-up.sh &
